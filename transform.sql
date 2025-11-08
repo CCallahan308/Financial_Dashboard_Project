@@ -2,11 +2,6 @@
 -- Transforms raw staging data into clean analytics star schema
 
 -- ===================================
--- TRUNCATE TABLES
--- ===================================
-TRUNCATE TABLE analytics.fact_prices, analytics.fact_news, analytics.fact_economics, analytics.dim_security, analytics.dim_economic_indicator RESTART IDENTITY;
-
--- ===================================
 -- DATE DIMENSION POPULATION
 -- ===================================
 
@@ -34,23 +29,18 @@ INSERT INTO analytics.dim_security (symbol, company_name, sector, industry, mark
 SELECT DISTINCT
     symbol,
     CASE
-        WHEN symbol = 'NVDA' THEN 'NVIDIA Corporation'
-        WHEN symbol = 'TSM' THEN 'Taiwan Semiconductor Manufacturing Co., Ltd.'
-        WHEN symbol = 'NFLX' THEN 'Netflix, Inc.'
-        WHEN symbol = 'UBER' THEN 'Uber Technologies, Inc.'
-        WHEN symbol = 'ADBE' THEN 'Adobe Inc.'
+        WHEN symbol = 'AAPL' THEN 'Apple Inc.'
+        WHEN symbol = 'MSFT' THEN 'Microsoft Corporation'
+        WHEN symbol = 'GOOGL' THEN 'Alphabet Inc.'
+        WHEN symbol = 'TSLA' THEN 'Tesla, Inc.'
         ELSE SPLIT_PART(symbol, '.', 1)
     END as company_name,
     CASE
-        WHEN symbol IN ('NVDA', 'TSM', 'UBER', 'ADBE') THEN 'Technology'
-        WHEN symbol = 'NFLX' THEN 'Communication Services'
+        WHEN symbol IN ('AAPL', 'MSFT', 'GOOGL', 'TSLA') THEN 'Technology'
         ELSE 'Unknown'
     END as sector,
     CASE
-        WHEN symbol IN ('NVDA', 'TSM') THEN 'Semiconductors'
-        WHEN symbol = 'NFLX' THEN 'Entertainment'
-        WHEN symbol = 'UBER' THEN 'Software - Application'
-        WHEN symbol = 'ADBE' THEN 'Software - Infrastructure'
+        WHEN symbol IN ('AAPL', 'MSFT', 'GOOGL', 'TSLA') THEN 'Software'
         ELSE 'Unknown'
     END as industry,
     0 as market_cap
@@ -121,7 +111,7 @@ SELECT
     rna.description,
     rna.url,
     rna.source_name,
-    rna.sentiment_score as sentiment_score
+    0.0 as sentiment_score
 FROM staging.raw_news_articles rna
 JOIN analytics.dim_date dd ON TO_DATE(SUBSTRING(rna.published_at, 1, 10), 'YYYY-MM-DD') = dd.full_date
 JOIN analytics.dim_security ds ON rna.symbol_searched = ds.symbol

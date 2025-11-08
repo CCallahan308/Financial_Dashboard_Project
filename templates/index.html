@@ -76,18 +76,18 @@
                     </div>
                     <div class="col-md-2 col-sm-6 mb-3">
                         <div class="metric-card">
-                            <div class="metric-icon bg-info">
-                                <i class="fas fa-smile"></i>
+                            <div class="metric-icon bg-warning">
+                                <i class="fas fa-minus"></i>
                             </div>
                             <div class="metric-content">
-                                <h6>Avg. Sentiment</h6>
-                                <h3>{{ summary_metrics.avg_sentiment }}</h3>
+                                <h6>Unchanged</h6>
+                                <h3>{{ summary_metrics.unchanged }}</h3>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-2 col-sm-6 mb-3">
                         <div class="metric-card">
-                            <div class="metric-icon bg-secondary">
+                            <div class="metric-icon bg-info">
                                 <i class="fas fa-newspaper"></i>
                             </div>
                             <div class="metric-content">
@@ -98,7 +98,7 @@
                     </div>
                     <div class="col-md-2 col-sm-6 mb-3">
                         <div class="metric-card">
-                            <div class="metric-icon bg-warning">
+                            <div class="metric-icon bg-secondary">
                                 <i class="fas fa-chart-bar"></i>
                             </div>
                             <div class="metric-content">
@@ -159,11 +159,7 @@
                                     <div class="news-item">
                                         <div class="news-header">
                                             <span class="news-source">{{ article.source_name }}</span>
-                                            <div class="d-flex align-items-center">
-                                                {% set sentiment_color = 'text-muted' if article.sentiment_score is none else ('text-warning' if article.sentiment_score > -0.05 and article.sentiment_score < 0.05 else ('text-success' if article.sentiment_score > 0 else 'text-danger')) %}
-                                                <i class="fas fa-circle {{ sentiment_color }} me-2" title="Sentiment: {{ article.sentiment_score }}"></i>
-                                                <span class="news-date">{{ article.full_date.strftime('%b %d, %Y') }}</span>
-                                            </div>
+                                            <span class="news-date">{{ article.full_date.strftime('%b %d, %Y') }}</span>
                                         </div>
                                         <h6 class="news-title">
                                             <a href="{{ article.url }}" target="_blank" rel="noopener noreferrer">

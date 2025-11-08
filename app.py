@@ -68,7 +68,6 @@ def get_news_data():
         fn.description,
         fn.url,
         fn.source_name,
-        fn.sentiment_score,
         ds.symbol,
         dd.full_date
     FROM analytics.fact_news fn
@@ -144,18 +143,14 @@ def get_summary_metrics():
         )
         JOIN analytics.dim_date dd ON fp.date_key = dd.date_key
         WHERE dd.full_date = lp.full_date - INTERVAL '1 day'
-    ),
-    sentiment as (
-        SELECT AVG(sentiment_score) as avg_sentiment FROM analytics.fact_news
     )
     SELECT
-        (SELECT COUNT(*) FROM analytics.dim_security) as total_securities,
+        COUNT(*) as total_securities,
         SUM(CASE WHEN pc.price_change > 0 THEN 1 ELSE 0 END) as gainers,
         SUM(CASE WHEN pc.price_change < 0 THEN 1 ELSE 0 END) as losers,
         SUM(CASE WHEN pc.price_change = 0 THEN 1 ELSE 0 END) as unchanged,
         AVG(CASE WHEN pc.price_change > 0 THEN pc.price_change ELSE NULL END) as avg_gain,
-        AVG(CASE WHEN pc.price_change < 0 THEN pc.price_change ELSE NULL END) as avg_loss,
-        (SELECT avg_sentiment FROM sentiment)
+        AVG(CASE WHEN pc.price_change < 0 THEN pc.price_change ELSE NULL END) as avg_loss
     FROM price_changes pc;
     """
 
@@ -169,8 +164,7 @@ def get_summary_metrics():
         'losers': data.losers if data else 0,
         'unchanged': data.unchanged if data else 0,
         'avg_gain': round(data.avg_gain, 2) if data and data.avg_gain else 0,
-        'avg_loss': round(data.avg_loss, 2) if data and data.avg_loss else 0,
-        'avg_sentiment': round(data.avg_sentiment, 2) if data and data.avg_sentiment else 0
+        'avg_loss': round(data.avg_loss, 2) if data and data.avg_loss else 0
     }
 
 
