@@ -121,7 +121,7 @@ SELECT
     rna.description,
     rna.url,
     rna.source_name,
-    0.0 as sentiment_score
+    rna.sentiment_score as sentiment_score
 FROM staging.raw_news_articles rna
 JOIN analytics.dim_date dd ON TO_DATE(SUBSTRING(rna.published_at, 1, 10), 'YYYY-MM-DD') = dd.full_date
 JOIN analytics.dim_security ds ON rna.symbol_searched = ds.symbol

@@ -31,6 +31,7 @@ CREATE TABLE IF NOT EXISTS staging.raw_news_articles (
     url TEXT NOT NULL,
     source_name TEXT,
     published_at TEXT,
+    sentiment_score NUMERIC(3,2),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -162,3 +163,17 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA analytics TO dashbo
 -- Grant permissions on sequences
 GRANT USAGE ON ALL SEQUENCES IN SCHEMA staging TO dashboard_user;
 GRANT USAGE ON ALL SEQUENCES IN SCHEMA analytics TO dashboard_user;
+
+-- Add sentiment_score column to staging.raw_news_articles if it doesn't exist
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1
+        FROM information_schema.columns
+        WHERE table_schema = 'staging'
+        AND table_name = 'raw_news_articles'
+        AND column_name = 'sentiment_score'
+    ) THEN
+        ALTER TABLE staging.raw_news_articles ADD COLUMN sentiment_score NUMERIC(3,2);
+    END IF;
+END $$;

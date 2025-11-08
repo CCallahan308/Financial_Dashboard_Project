@@ -13,6 +13,8 @@ from datetime import datetime, timedelta
 from sqlalchemy import create_engine, text
 from dotenv import load_dotenv
 from typing import List, Dict, Any
+import nltk
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
 # Load environment variables
 load_dotenv()
@@ -28,12 +30,25 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# --- NLTK VADER Setup ---
+def download_vader_lexicon():
+    """Download the VADER lexicon for sentiment analysis if not already downloaded."""
+    try:
+        nltk.data.find('sentiment/vader_lexicon.zip')
+    except LookupError:
+        logger.info("Downloading VADER lexicon for sentiment analysis...")
+        nltk.download('vader_lexicon')
+        logger.info("VADER lexicon downloaded successfully.")
+
+download_vader_lexicon()
+# --- End NLTK Setup ---
+
 # Environment variables
 DATABASE_URL = os.getenv('DATABASE_URL')
 ALPHA_VANTAGE_API_KEY = os.getenv('ALPHA_VANTAGE_API_KEY')
 NEWSAPI_KEY = os.getenv('NEWSAPI_KEY')
 FRED_API_KEY = os.getenv('FRED_API_KEY')
-BASE_STOCK_SYMBOLS = os.getenv('BASE_STOCK_SYMBOLS', 'AAPL,MSFT,GOOGL,TSLA').split(',')
+BASE_STOCK_SYMBOLS = os.getenv('BASE_STOCK_SYMBOLS', 'NVDA,TSM,NFLX,UBER,ADBE').split(',')
 ECONOMIC_SERIES = os.getenv('ECONOMIC_SERIES', 'GDP,UNRATE,CPIAUCSL,FEDFUNDS').split(',')
 
 # Validate required environment variables
@@ -129,7 +144,7 @@ def extract_stock_data(symbols: List[str]) -> pd.DataFrame:
 
 def extract_news_data(symbols: List[str]) -> pd.DataFrame:
     """
-    Extract news articles from NewsAPI
+    Extract news articles from NewsAPI and perform sentiment analysis
 
     Args:
         symbols: List of stock symbols to search for in news
@@ -141,6 +156,7 @@ def extract_news_data(symbols: List[str]) -> pd.DataFrame:
 
     all_data = []
     base_url = "https://newsapi.org/v2/everything"
+    sid = SentimentIntensityAnalyzer()
 
     # Calculate date range (last 7 days)
     end_date = datetime.now()
@@ -172,13 +188,18 @@ def extract_news_data(symbols: List[str]) -> pd.DataFrame:
             articles = data.get('articles', [])
 
             for article in articles:
+                title = article.get('title', '')
+                # Perform sentiment analysis on the title
+                sentiment_score = sid.polarity_scores(title)['compound']
+
                 all_data.append({
                     'symbol_searched': symbol,
-                    'title': article.get('title', ''),
+                    'title': title,
                     'description': article.get('description', ''),
                     'url': article.get('url', ''),
                     'source_name': article.get('source', {}).get('name', ''),
-                    'published_at': article.get('publishedAt', '')
+                    'published_at': article.get('publishedAt', ''),
+                    'sentiment_score': sentiment_score
                 })
 
             logger.info(f"Found {len(articles)} articles for {symbol}")
