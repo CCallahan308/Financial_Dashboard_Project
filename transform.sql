@@ -80,7 +80,7 @@ WHERE series_id NOT IN (SELECT series_id FROM analytics.dim_economic_indicator);
 
 -- Transform and load clean price data
 INSERT INTO analytics.fact_prices (date_key, security_key, open_price, high_price, low_price, close_price, volume)
-SELECT
+SELECT DISTINCT
     dd.date_key,
     ds.security_key,
     CAST(rsp.open_price AS NUMERIC(10,2)) as open_price,
@@ -91,12 +91,11 @@ SELECT
 FROM staging.raw_stock_prices rsp
 JOIN analytics.dim_date dd ON TO_DATE(rsp.trade_date, 'YYYY-MM-DD') = dd.full_date
 JOIN analytics.dim_security ds ON rsp.symbol = ds.symbol
+LEFT JOIN analytics.fact_prices fp ON dd.date_key = fp.date_key AND ds.security_key = fp.security_key
 WHERE rsp.trade_date IS NOT NULL
   AND rsp.close_price IS NOT NULL
   AND CAST(rsp.close_price AS NUMERIC(10,2)) > 0
-  AND (dd.date_key, ds.security_key) NOT IN (
-      SELECT date_key, security_key FROM analytics.fact_prices
-  );
+  AND fp.date_key IS NULL;
 
 -- ===================================
 -- NEWS FACT TABLE POPULATION
@@ -116,8 +115,10 @@ SELECT
 FROM staging.raw_news_articles rna
 JOIN analytics.dim_date dd ON TO_DATE(SUBSTRING(rna.published_at, 1, 10), 'YYYY-MM-DD') = dd.full_date
 JOIN analytics.dim_security ds ON rna.symbol_searched = ds.symbol
+LEFT JOIN analytics.fact_news fn ON rna.url = fn.url
 WHERE rna.published_at IS NOT NULL
-  AND rna.url IS NOT NULL;
+  AND rna.url IS NOT NULL
+  AND fn.url IS NULL;
 
 -- ===================================
 -- ECONOMIC FACT TABLE POPULATION
@@ -125,7 +126,7 @@ WHERE rna.published_at IS NOT NULL
 
 -- Transform and load clean economic data
 INSERT INTO analytics.fact_economics (date_key, indicator_key, value, change_percent)
-SELECT
+SELECT DISTINCT
     dd.date_key,
     dei.indicator_key,
     CAST(red.series_value AS NUMERIC(15,4)) as value,
@@ -133,11 +134,10 @@ SELECT
 FROM staging.raw_econ_data red
 JOIN analytics.dim_date dd ON TO_DATE(red.series_date, 'YYYY-MM-DD') = dd.full_date
 JOIN analytics.dim_economic_indicator dei ON red.series_id = dei.series_id
+LEFT JOIN analytics.fact_economics fe ON dd.date_key = fe.date_key AND dei.indicator_key = fe.indicator_key
 WHERE red.series_value IS NOT NULL
   AND CAST(red.series_value AS NUMERIC(15,4)) IS NOT NULL
-  AND (dd.date_key, dei.indicator_key) NOT IN (
-      SELECT date_key, indicator_key FROM analytics.fact_economics
-  );
+  AND fe.date_key IS NULL;
 
 -- ===================================
 -- UPDATE CHANGE PERCENTAGES FOR ECONOMIC DATA
@@ -150,13 +150,15 @@ SET change_percent = CASE
     THEN ((fe1.value - fe2.value) / fe2.value) * 100
     ELSE 0.0
 END
-FROM analytics.fact_economics fe2
-JOIN analytics.dim_economic_indicator dei ON fe1.indicator_key = dei.indicator_key
-JOIN analytics.dim_date dd1 ON fe1.date_key = dd1.date_key
-JOIN analytics.dim_date dd2 ON fe2.date_key = dd2.date_key
-WHERE fe2.indicator_key = fe1.indicator_key
-  AND dd2.full_date = dd1.full_date - INTERVAL '1 month'
-  AND fe1.change_percent = 0.0;
+FROM
+    analytics.fact_economics fe2
+    JOIN analytics.dim_date dd2 ON fe2.date_key = dd2.date_key,
+    analytics.dim_date dd1
+WHERE
+    fe1.date_key = dd1.date_key
+    AND fe1.indicator_key = fe2.indicator_key
+    AND dd2.full_date = dd1.full_date - INTERVAL '1 month'
+    AND fe1.change_percent = 0.0;
 
 -- ===================================
 -- TRANSFORMATION SUMMARY

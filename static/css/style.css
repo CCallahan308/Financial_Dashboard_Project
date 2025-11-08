@@ -1,431 +1,141 @@
-/* Financial Dashboard CSS Styles */
+/* Ultra-Modern 'Glassmorphism' Dashboard CSS */
 
-/* General Body and Layout */
-body {
-    background-color: #f8f9fa;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    margin: 0;
-    padding: 0;
+/* 1. FONT IMPORT */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* 2. CSS VARIABLES & THEMES */
+:root {
+    /* Shared */
+    --border-radius: 16px;
+    --transition-speed: 0.4s;
+
+    /* Light Theme */
+    --bg-gradient: linear-gradient(120deg, #f5f7fa 0%, #c3cfe2 100%);
+    --glass-bg: rgba(255, 255, 255, 0.6);
+    --glass-border: rgba(255, 255, 255, 0.9);
+    --text-color: #3d405b;
+    --heading-color: #1e293b;
+    --muted-text-color: #5a6181;
+    --shadow-color: rgba(61, 64, 91, 0.1);
+    --primary-color: #5e7ce2;
+    --success-color: #10ac84;
+    --danger-color: #d63031;
+    --header-text: #1e293b;
 }
 
-/* Header Styling */
+[data-theme="dark"] {
+    /* Dark Theme */
+    --bg-gradient: linear-gradient(120deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+    --glass-bg: rgba(44, 62, 80, 0.6);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --text-color: #bdc3c7;
+    --heading-color: #ecf0f1;
+    --muted-text-color: #95a5a6;
+    --shadow-color: rgba(0, 0, 0, 0.2);
+    --primary-color: #6b89e6;
+    --header-text: #ecf0f1;
+}
+
+/* 3. GENERAL STYLES */
+body {
+    background-image: var(--bg-gradient);
+    background-attachment: fixed;
+    font-family: 'Poppins', sans-serif;
+    color: var(--text-color);
+    transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+}
+
+/* 4. HEADER */
 .dashboard-header {
-    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-    color: white;
-    padding: 1rem 0;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px); /* For Safari */
+    border-bottom: 1px solid var(--glass-border);
+    color: var(--header-text);
+    padding: 1rem 1.5rem;
     position: sticky;
     top: 0;
-    z-index: 1000;
+    z-index: 1020;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 5px 20px var(--shadow-color);
 }
 
 .dashboard-header h1 {
-    font-weight: 600;
-    margin: 0;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: var(--heading-color);
 }
 
-.dashboard-header .btn-outline-light {
-    border-color: rgba(255,255,255,0.3);
-    color: white;
-    transition: all 0.3s ease;
+/* Theme Switcher */
+#theme-switcher {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--heading-color);
+}
+.theme-switch { position: relative; display: inline-block; width: 50px; height: 26px; }
+.theme-switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(128, 128, 128, 0.4); transition: .4s; border-radius: 34px; }
+.slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+input:checked + .slider { background-color: var(--primary-color); }
+input:checked + .slider:before { transform: translateX(24px); }
+
+/* 5. CARDS - The Glassmorphism Core */
+.metric-card, .chart-card, .data-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--border-radius);
+    box-shadow: 0 8px 32px 0 var(--shadow-color);
+    transition: all var(--transition-speed) ease;
+    overflow: hidden;
 }
 
-.dashboard-header .btn-outline-light:hover {
-    background-color: rgba(255,255,255,0.1);
-    border-color: rgba(255,255,255,0.5);
-    color: white;
-}
-
-/* Main Content Area */
-.dashboard-content {
-    min-height: calc(100vh - 80px);
-    padding-top: 1rem;
+.metric-card:hover, .chart-card:hover, .data-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 16px 40px 0 var(--shadow-color);
+    border-color: var(--primary-color);
 }
 
 /* Metric Cards */
-.metric-card {
-    background: white;
-    border-radius: 10px;
-    padding: 1.5rem;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-    border: 1px solid #e9ecef;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
+.metric-card { padding: 1.5rem; display: flex; align-items: center; gap: 1.25rem; }
+.metric-icon { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.25rem; }
+.metric-content h6 { color: var(--muted-text-color); font-size: 0.8rem; font-weight: 500; text-transform: uppercase; }
+.metric-content h3 { color: var(--heading-color); font-size: 2rem; font-weight: 700; }
 
-.metric-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
-}
-
-.metric-icon {
-    width: 60px;
-    height: 60px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 1.5rem;
-    flex-shrink: 0;
-}
-
-.metric-content h6 {
-    color: #6c757d;
-    font-size: 0.875rem;
-    font-weight: 500;
-    margin-bottom: 0.25rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.metric-content h3 {
-    color: #2c3e50;
-    font-size: 1.75rem;
-    font-weight: 700;
-    margin-bottom: 0.25rem;
-}
-
-.metric-content small {
-    font-size: 0.75rem;
-    font-weight: 500;
-}
-
-/* Chart Cards */
-.chart-card {
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-    border: 1px solid #e9ecef;
-    overflow: hidden;
-    height: 100%;
-}
-
-.chart-header {
-    background: #f8f9fa;
+/* Chart & Data Cards */
+.chart-header, .data-header {
     padding: 1rem 1.5rem;
-    border-bottom: 1px solid #e9ecef;
-    display: flex;
-    justify-content: between;
-    align-items: center;
+    border-bottom: 1px solid var(--glass-border);
+    background: transparent; /* Remove inner header background */
 }
+.chart-title, .data-title { color: var(--heading-color); font-size: 1.1rem; font-weight: 600; }
+.chart-container { padding: 1rem; height: 350px; }
 
-.chart-title {
-    color: #2c3e50;
-    font-size: 1rem;
-    font-weight: 600;
-    margin: 0;
-}
+/* News & Economic Data */
+.news-container, .economic-container { padding: 0.5rem; overflow-y: auto; max-height: 450px; }
+.news-item, .economic-item { padding: 1rem; border-bottom: 1px solid var(--glass-border); }
+.news-item:last-child, .economic-item:last-child { border-bottom: none; }
+.news-title a { color: var(--heading-color); text-decoration: none; font-weight: 600; }
+.news-title a:hover { color: var(--primary-color); }
+.news-source { background: var(--primary-color); color: white; padding: 0.25rem 0.5rem; border-radius: 6px; font-size: 0.7rem; font-weight: 500; }
 
-.chart-controls {
-    display: flex;
-    gap: 0.5rem;
-}
+/* 6. UTILITIES & PLOTLY */
+.bg-primary { background-color: var(--primary-color) !important; }
+.bg-success { background-color: var(--success-color) !important; }
+.bg-danger { background-color: var(--danger-color) !important; }
 
-.chart-container {
-    height: 400px;
-    padding: 1rem;
-}
-
-/* Data Cards (News and Economic) */
-.data-card {
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-    border: 1px solid #e9ecef;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-}
-
-.data-header {
-    background: #f8f9fa;
-    padding: 1rem 1.5rem;
-    border-bottom: 1px solid #e9ecef;
-}
-
-.data-title {
-    color: #2c3e50;
-    font-size: 1rem;
-    font-weight: 600;
-    margin: 0;
-}
-
-.news-container,
-.economic-container {
-    padding: 1rem;
-    overflow-y: auto;
-    flex: 1;
-    max-height: 500px;
-}
-
-/* News Items */
-.news-item {
-    padding: 1rem;
-    border-bottom: 1px solid #f1f3f4;
-    transition: background-color 0.2s ease;
-}
-
-.news-item:hover {
-    background-color: #f8f9fa;
-}
-
-.news-item:last-child {
-    border-bottom: none;
-}
-
-.news-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.5rem;
-}
-
-.news-source {
-    background: #e3f2fd;
-    color: #1976d2;
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: 500;
-}
-
-.news-date {
-    color: #6c757d;
-    font-size: 0.75rem;
-}
-
-.news-title {
-    font-size: 0.9rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    line-height: 1.4;
-}
-
-.news-title a {
-    color: #2c3e50;
-    text-decoration: none;
-    transition: color 0.2s ease;
-}
-
-.news-title a:hover {
-    color: #3498db;
-}
-
-.news-description {
-    color: #6c757d;
-    font-size: 0.8rem;
-    line-height: 1.4;
-    margin-bottom: 0.75rem;
-}
-
-.news-symbol .badge {
-    font-size: 0.7rem;
-    padding: 0.25rem 0.5rem;
-}
-
-/* Economic Items */
-.economic-item {
-    padding: 1rem;
-    border-bottom: 1px solid #f1f3f4;
-    transition: background-color 0.2s ease;
-}
-
-.economic-item:hover {
-    background-color: #f8f9fa;
-}
-
-.economic-item:last-child {
-    border-bottom: none;
-}
-
-.economic-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.5rem;
-}
-
-.economic-name {
-    font-weight: 600;
-    color: #2c3e50;
-    font-size: 0.9rem;
-}
-
-.economic-date {
-    color: #6c757d;
-    font-size: 0.75rem;
-}
-
-.economic-values {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.economic-value {
-    font-weight: 700;
-    color: #2c3e50;
-    font-size: 1rem;
-}
-
-.economic-change {
-    font-size: 0.8rem;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-}
-
-/* No Data State */
-.no-data {
-    text-align: center;
-    padding: 3rem 1rem;
-    color: #6c757d;
-}
-
-.no-data i {
-    opacity: 0.5;
-}
-
-/* Loading Overlay */
-.loading-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 9999;
-}
-
-.loading-spinner {
-    background: white;
-    padding: 2rem;
-    border-radius: 10px;
-    text-align: center;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-}
-
-.loading-spinner .spinner-border {
-    width: 3rem;
-    height: 3rem;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .dashboard-header {
-        padding: 0.75rem 0;
-    }
-
-    .dashboard-header h1 {
-        font-size: 1.25rem;
-    }
-
-    .metric-card {
-        flex-direction: column;
-        text-align: center;
-        gap: 0.75rem;
-    }
-
-    .metric-icon {
-        width: 50px;
-        height: 50px;
-        font-size: 1.25rem;
-    }
-
-    .metric-content h3 {
-        font-size: 1.5rem;
-    }
-
-    .chart-container {
-        height: 300px;
-    }
-
-    .news-container,
-    .economic-container {
-        max-height: 400px;
-    }
-
-    .news-header,
-    .economic-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.25rem;
-    }
-}
-
-@media (max-width: 576px) {
-    .dashboard-header .row {
-        flex-direction: column;
-        gap: 1rem;
-        text-align: center;
-    }
-
-    .dashboard-header .col-auto {
-        width: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 1rem;
-    }
-
-    .chart-container {
-        height: 250px;
-    }
-}
-
-/* Animation and Transitions */
-.fade-in {
-    animation: fadeIn 0.5s ease-in;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+/* Plotly Dark Theme Integration */
+[data-theme="dark"] .chart-container {
+    /* This is a placeholder. Plotly charts need JS updates for full dark theme. */
+    border-radius: var(--border-radius);
 }
 
 /* Custom Scrollbar */
-.news-container::-webkit-scrollbar,
-.economic-container::-webkit-scrollbar {
-    width: 6px;
-}
-
-.news-container::-webkit-scrollbar-track,
-.economic-container::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 3px;
-}
-
-.news-container::-webkit-scrollbar-thumb,
-.economic-container::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
-    border-radius: 3px;
-}
-
-.news-container::-webkit-scrollbar-thumb:hover,
-.economic-container::-webkit-scrollbar-thumb:hover {
-    background: #a8a8a8;
-}
-
-/* Chart Customization */
-.plotly .modebar {
-    background: transparent !important;
-    border: none !important;
-}
-
-.plotly .modebar-btn {
-    background: rgba(255,255,255,0.8) !important;
-    border-radius: 4px !important;
-    margin: 2px !important;
-}
-
-.plotly .modebar-btn:hover {
-    background: rgba(255,255,255,1) !important;
-}
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--muted-text-color); }

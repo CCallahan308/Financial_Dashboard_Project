@@ -11,24 +11,26 @@
 </head>
 <body>
     <header class="dashboard-header">
-        <div class="container-fluid">
-            <div class="row align-items-center">
-                <div class="col">
-                    <h1 class="h3 mb-0">
-                        <i class="fas fa-chart-line me-2"></i>
-                        Financial Dashboard
-                    </h1>
-                </div>
-                <div class="col-auto">
-                    <button id="refreshBtn" class="btn btn-outline-light">
-                        <i class="fas fa-sync-alt me-1"></i>
-                        Refresh Data
-                    </button>
-                    <span class="text-light ms-3">
-                        Last Updated: <span id="lastUpdated">{{ moment().format('MMM D, YYYY h:mm A') }}</span>
-                    </span>
-                </div>
+        <h1 class="h3 mb-0">
+            <i class="fas fa-chart-line me-2"></i>
+            Financial Dashboard
+        </h1>
+        <div class="d-flex align-items-center">
+            <div id="theme-switcher">
+                <i class="fas fa-sun"></i>
+                <label class="theme-switch">
+                    <input type="checkbox" id="slider">
+                    <span class="slider"></span>
+                </label>
+                <i class="fas fa-moon"></i>
             </div>
+            <button id="refreshBtn" class="btn btn-outline-light ms-4">
+                <i class="fas fa-sync-alt me-1"></i>
+                Refresh Data
+            </button>
+            <span class="text-light ms-3">
+                Last Updated: <span id="lastUpdated"></span>
+            </span>
         </div>
     </header>
 
@@ -249,9 +251,68 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script>
+        // Theme switcher
+        const themeSwitcher = document.getElementById('slider');
+        const docElement = document.documentElement;
+
+        const lightTheme = {
+            '--bg-gradient': 'linear-gradient(120deg, #f5f7fa 0%, #c3cfe2 100%)',
+            '--glass-bg': 'rgba(255, 255, 255, 0.6)',
+            '--glass-border': 'rgba(255, 255, 255, 0.9)',
+            '--text-color': '#3d405b',
+            '--heading-color': '#1e293b',
+            '--muted-text-color': '#5a6181',
+            '--header-text': '#1e293b'
+        };
+
+        const darkTheme = {
+            '--bg-gradient': 'linear-gradient(120deg, #0f2027 0%, #203a43 50%, #2c5364 100%)',
+            '--glass-bg': 'rgba(44, 62, 80, 0.6)',
+            '--glass-border': 'rgba(255, 255, 255, 0.1)',
+            '--text-color': '#bdc3c7',
+            '--heading-color': '#ecf0f1',
+            '--muted-text-color': '#95a5a6',
+            '--header-text': '#ecf0f1'
+        };
+
+        function applyTheme(theme) {
+            const themeColors = theme === 'dark' ? darkTheme : lightTheme;
+            docElement.setAttribute('data-theme', theme);
+            for (const [key, value] of Object.entries(themeColors)) {
+                docElement.style.setProperty(key, value);
+            }
+            localStorage.setItem('theme', theme);
+            updateChartTheme(theme);
+        }
+
+        function switchTheme(e) {
+            applyTheme(e.target.checked ? 'dark' : 'light');
+        }
+
+        themeSwitcher.addEventListener('change', switchTheme, false);
+
         // Initialize charts
         let priceChart = {{ price_chart|safe }};
         let volumeChart = {{ volume_chart|safe }};
+
+        function updateChartTheme(theme) {
+            const isDark = theme === 'dark';
+            const chartLayoutUpdate = {
+                'plot_bgcolor': 'transparent',
+                'paper_bgcolor': 'transparent',
+                'font.color': isDark ? '#ecf0f1' : '#3d405b',
+                'xaxis.gridcolor': isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
+                'yaxis.gridcolor': isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
+                'xaxis.linecolor': isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)',
+                'yaxis.linecolor': isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)',
+            };
+            if (priceChart && Object.keys(priceChart).length > 0) {
+                Plotly.relayout('priceChart', chartLayoutUpdate);
+            }
+            if (volumeChart && Object.keys(volumeChart).length > 0) {
+                Plotly.relayout('volumeChart', chartLayoutUpdate);
+            }
+        }
 
         // Render charts on page load
         document.addEventListener('DOMContentLoaded', function() {
@@ -261,6 +322,13 @@
             if (volumeChart && Object.keys(volumeChart).length > 0) {
                 Plotly.newPlot('volumeChart', volumeChart.data, volumeChart.layout, {responsive: true});
             }
+            
+            const currentTheme = localStorage.getItem('theme') || 'light';
+            docElement.setAttribute('data-theme', currentTheme);
+            if (currentTheme === 'dark') {
+                themeSwitcher.checked = true;
+            }
+            applyTheme(currentTheme);
             updateLastUpdated();
         });
 
@@ -279,16 +347,7 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        // Update charts
-                        if (data.price_chart && Object.keys(data.price_chart).length > 0) {
-                            Plotly.react('priceChart', data.price_chart.data, data.price_chart.layout);
-                        }
-                        if (data.volume_chart && Object.keys(data.volume_chart).length > 0) {
-                            Plotly.react('volumeChart', data.volume_chart.data, data.volume_chart.layout);
-                        }
-
-                        // Update metrics
-                        location.reload(); // Simple reload to update all metrics
+                        location.reload(); // Simple reload to update all metrics and charts
                     } else {
                         showError(data.error || 'Failed to refresh data');
                     }
