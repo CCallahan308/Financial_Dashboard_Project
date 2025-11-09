@@ -24,11 +24,11 @@
                 </label>
                 <i class="fas fa-moon"></i>
             </div>
-            <button id="refreshBtn" class="btn btn-outline-light ms-4">
+            <button id="refreshBtn" class="btn btn-primary ms-4 refresh-btn">
                 <i class="fas fa-sync-alt me-1"></i>
                 Refresh Data
             </button>
-            <span class="text-light ms-3">
+            <span class="ms-3">
                 Last Updated: <span id="lastUpdated"></span>
             </span>
         </div>
@@ -82,6 +82,7 @@
                             <div class="metric-content">
                                 <h6>Unchanged</h6>
                                 <h3>{{ summary_metrics.unchanged }}</h3>
+                                <small class="text-muted">&nbsp;</small>
                             </div>
                         </div>
                     </div>
