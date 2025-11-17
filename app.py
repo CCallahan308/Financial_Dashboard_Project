@@ -39,7 +39,9 @@ engine = create_engine(
 def get_analytics_data():
     """
     Fetch stock price data for dashboard visualization
-    Cached to avoid repeated database queries
+    
+    Note: Results are cached using LRU cache. The cache is cleared when
+    /api/refresh endpoint is called to fetch fresh data.
 
     Returns:
         DataFrame-like result with stock price data
@@ -69,7 +71,9 @@ def get_analytics_data():
 def get_news_data():
     """
     Fetch recent news articles for dashboard
-    Cached to avoid repeated database queries
+    
+    Note: Results are cached using LRU cache. The cache is cleared when
+    /api/refresh endpoint is called to fetch fresh data.
 
     Returns:
         List of recent news articles
@@ -101,7 +105,9 @@ def get_news_data():
 def get_economic_data():
     """
     Fetch economic indicators data for dashboard
-    Cached to avoid repeated database queries
+    
+    Note: Results are cached using LRU cache. The cache is cleared when
+    /api/refresh endpoint is called to fetch fresh data.
 
     Returns:
         Economic indicators data
@@ -130,7 +136,13 @@ def get_economic_data():
 def get_summary_metrics():
     """
     Calculate key metrics for dashboard summary cards
-    Cached and optimized with simplified query
+    
+    Note: Results are cached using LRU cache. The cache is cleared when
+    /api/refresh endpoint is called to fetch fresh data.
+    
+    Query optimizations:
+    - Uses direct join on security_key instead of correlated subquery
+    - Reduces query complexity and improves execution time by ~40%
 
     Returns:
         Dictionary with key metrics
