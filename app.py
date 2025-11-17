@@ -197,7 +197,7 @@ def get_summary_metrics():
 
 def create_price_chart(data):
     """
-    Create interactive Plotly chart for stock prices
+    Create interactive Plotly chart for stock prices with professional styling
 
     Args:
         data: Stock price data from database
@@ -218,28 +218,76 @@ def create_price_chart(data):
         symbols[symbol]['prices'].append(float(row.close_price))
         symbols[symbol]['volumes'].append(int(row.volume))
 
-    # Create figure with secondary y-axis for volume
+    # Professional color palette for financial data
+    colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4']
+    
+    # Create figure
     fig = go.Figure()
 
-    # Add price lines for each symbol
-    for symbol, data_dict in symbols.items():
+    # Add price lines for each symbol with enhanced styling
+    for idx, (symbol, data_dict) in enumerate(symbols.items()):
+        color = colors[idx % len(colors)]
         fig.add_trace(go.Scatter(
             x=data_dict['dates'],
             y=data_dict['prices'],
-            mode='lines+markers',
-            name=f'{symbol} Price',
-            line=dict(width=2),
-            hovertemplate='<b>%{fullData.name}</b><br>Date: %{x}<br>Price: $%{y:.2f}<extra></extra>'
+            mode='lines',
+            name=symbol,
+            line=dict(
+                width=3,
+                color=color,
+                shape='spline'
+            ),
+            hovertemplate='<b>%{fullData.name}</b><br>' +
+                         'Date: %{x}<br>' +
+                         'Price: $%{y:,.2f}<br>' +
+                         '<extra></extra>'
         ))
 
     fig.update_layout(
-        title='Stock Price Trends (Last 30 Days)',
-        xaxis_title='Date',
-        yaxis_title='Stock Price ($)',
+        title={
+            'text': 'Stock Price Trends (Last 30 Days)',
+            'font': {'size': 16, 'family': 'Inter, sans-serif', 'weight': 700, 'color': '#0f172a'},
+            'x': 0.5,
+            'xanchor': 'center'
+        },
+        xaxis={
+            'title': 'Date',
+            'showgrid': True,
+            'gridwidth': 1,
+            'gridcolor': 'rgba(203, 213, 225, 0.3)',
+            'zeroline': False,
+            'tickfont': {'size': 11, 'family': 'Inter, sans-serif'}
+        },
+        yaxis={
+            'title': 'Price (USD)',
+            'showgrid': True,
+            'gridwidth': 1,
+            'gridcolor': 'rgba(203, 213, 225, 0.3)',
+            'zeroline': False,
+            'tickformat': '$,.2f',
+            'tickfont': {'size': 11, 'family': 'Inter, sans-serif'}
+        },
         hovermode='x unified',
-        template='plotly_white',
+        plot_bgcolor='transparent',
+        paper_bgcolor='transparent',
+        font={'family': 'Inter, sans-serif', 'size': 12, 'color': '#0f172a'},
+        showlegend=True,
+        legend={
+            'orientation': 'h',
+            'yanchor': 'bottom',
+            'y': 1.02,
+            'xanchor': 'right',
+            'x': 1,
+            'font': {'size': 11, 'family': 'Inter, sans-serif'}
+        },
         height=400,
-        margin=dict(l=0, r=0, t=40, b=0)
+        margin=dict(l=60, r=20, t=80, b=60),
+        hoverlabel={
+            'bgcolor': 'rgba(255, 255, 255, 0.95)',
+            'font_size': 12,
+            'font_family': 'Inter, sans-serif',
+            'bordercolor': 'rgba(203, 213, 225, 0.6)'
+        }
     )
 
     return json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
@@ -247,7 +295,7 @@ def create_price_chart(data):
 
 def create_volume_chart(data):
     """
-    Create interactive Plotly chart for trading volume
+    Create interactive Plotly chart for trading volume with professional styling
 
     Args:
         data: Stock price data from database
@@ -267,26 +315,75 @@ def create_volume_chart(data):
         symbols[symbol]['dates'].append(row.full_date.strftime('%Y-%m-%d'))
         symbols[symbol]['volumes'].append(int(row.volume))
 
+    # Professional color palette
+    colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4']
+    
     # Create figure
     fig = go.Figure()
 
-    # Add volume bars for each symbol
-    for symbol, data_dict in symbols.items():
+    # Add volume bars for each symbol with enhanced styling
+    for idx, (symbol, data_dict) in enumerate(symbols.items()):
+        color = colors[idx % len(colors)]
         fig.add_trace(go.Bar(
             x=data_dict['dates'],
             y=data_dict['volumes'],
-            name=f'{symbol} Volume',
-            hovertemplate='<b>%{fullData.name}</b><br>Date: %{x}<br>Volume: %{y:,.0f}<extra></extra>'
+            name=symbol,
+            marker=dict(
+                color=color,
+                line=dict(width=0),
+                opacity=0.8
+            ),
+            hovertemplate='<b>%{fullData.name}</b><br>' +
+                         'Date: %{x}<br>' +
+                         'Volume: %{y:,.0f}<br>' +
+                         '<extra></extra>'
         ))
 
     fig.update_layout(
-        title='Trading Volume (Last 30 Days)',
-        xaxis_title='Date',
-        yaxis_title='Volume',
+        title={
+            'text': 'Trading Volume (Last 30 Days)',
+            'font': {'size': 16, 'family': 'Inter, sans-serif', 'weight': 700, 'color': '#0f172a'},
+            'x': 0.5,
+            'xanchor': 'center'
+        },
+        xaxis={
+            'title': 'Date',
+            'showgrid': False,
+            'zeroline': False,
+            'tickfont': {'size': 11, 'family': 'Inter, sans-serif'}
+        },
+        yaxis={
+            'title': 'Volume',
+            'showgrid': True,
+            'gridwidth': 1,
+            'gridcolor': 'rgba(203, 213, 225, 0.3)',
+            'zeroline': False,
+            'tickformat': ',.0f',
+            'tickfont': {'size': 11, 'family': 'Inter, sans-serif'}
+        },
         barmode='group',
-        template='plotly_white',
+        bargap=0.15,
+        bargroupgap=0.1,
+        plot_bgcolor='transparent',
+        paper_bgcolor='transparent',
+        font={'family': 'Inter, sans-serif', 'size': 12, 'color': '#0f172a'},
+        showlegend=True,
+        legend={
+            'orientation': 'h',
+            'yanchor': 'bottom',
+            'y': 1.02,
+            'xanchor': 'right',
+            'x': 1,
+            'font': {'size': 11, 'family': 'Inter, sans-serif'}
+        },
         height=400,
-        margin=dict(l=0, r=0, t=40, b=0)
+        margin=dict(l=60, r=20, t=80, b=60),
+        hoverlabel={
+            'bgcolor': 'rgba(255, 255, 255, 0.95)',
+            'font_size': 12,
+            'font_family': 'Inter, sans-serif',
+            'bordercolor': 'rgba(203, 213, 225, 0.6)'
+        }
     )
 
     return json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)

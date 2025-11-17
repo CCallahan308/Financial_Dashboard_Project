@@ -3,33 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Financial Dashboard</title>
+    <meta name="description" content="Professional Financial Analytics Dashboard">
+    <title>Financial Dashboard | Real-Time Market Analytics</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
 </head>
 <body>
     <header class="dashboard-header">
-        <h1 class="h3 mb-0">
-            <i class="fas fa-chart-line me-2"></i>
+        <h1>
+            <i class="fas fa-chart-line"></i>
             Financial Dashboard
         </h1>
         <div class="d-flex align-items-center">
             <div id="theme-switcher">
                 <i class="fas fa-sun"></i>
                 <label class="theme-switch">
-                    <input type="checkbox" id="slider">
+                    <input type="checkbox" id="slider" aria-label="Toggle dark mode">
                     <span class="slider"></span>
                 </label>
                 <i class="fas fa-moon"></i>
             </div>
-            <button id="refreshBtn" class="btn btn-primary ms-4 refresh-btn">
-                <i class="fas fa-sync-alt me-1"></i>
+            <button id="refreshBtn" class="btn btn-primary ms-4 refresh-btn" aria-label="Refresh dashboard data">
+                <i class="fas fa-sync-alt"></i>
                 Refresh Data
             </button>
             <span class="ms-3">
-                Last Updated: <span id="lastUpdated"></span>
+                Last Updated: <span id="lastUpdated">--</span>
             </span>
         </div>
     </header>
@@ -257,23 +258,35 @@
         const docElement = document.documentElement;
 
         const lightTheme = {
-            '--bg-gradient': 'linear-gradient(120deg, #f5f7fa 0%, #c3cfe2 100%)',
-            '--glass-bg': 'rgba(255, 255, 255, 0.6)',
-            '--glass-border': 'rgba(255, 255, 255, 0.9)',
-            '--text-color': '#3d405b',
-            '--heading-color': '#1e293b',
-            '--muted-text-color': '#5a6181',
-            '--header-text': '#1e293b'
+            '--bg-gradient': 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+            '--glass-bg': 'rgba(255, 255, 255, 0.85)',
+            '--glass-bg-hover': 'rgba(255, 255, 255, 0.95)',
+            '--glass-border': 'rgba(203, 213, 225, 0.6)',
+            '--glass-border-hover': 'rgba(148, 163, 184, 0.8)',
+            '--text-color': '#0f172a',
+            '--text-secondary': '#475569',
+            '--text-tertiary': '#64748b',
+            '--heading-color': '#020617',
+            '--muted-text-color': '#64748b',
+            '--header-text': '#020617',
+            '--header-bg': 'rgba(255, 255, 255, 0.95)',
+            '--header-border': 'rgba(203, 213, 225, 0.8)'
         };
 
         const darkTheme = {
-            '--bg-gradient': 'linear-gradient(120deg, #0f2027 0%, #203a43 50%, #2c5364 100%)',
-            '--glass-bg': 'rgba(44, 62, 80, 0.6)',
-            '--glass-border': 'rgba(255, 255, 255, 0.1)',
-            '--text-color': '#bdc3c7',
-            '--heading-color': '#ecf0f1',
-            '--muted-text-color': '#95a5a6',
-            '--header-text': '#ecf0f1'
+            '--bg-gradient': 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+            '--glass-bg': 'rgba(30, 41, 59, 0.85)',
+            '--glass-bg-hover': 'rgba(30, 41, 59, 0.95)',
+            '--glass-border': 'rgba(71, 85, 105, 0.4)',
+            '--glass-border-hover': 'rgba(100, 116, 139, 0.6)',
+            '--text-color': '#e2e8f0',
+            '--text-secondary': '#cbd5e1',
+            '--text-tertiary': '#94a3b8',
+            '--heading-color': '#f8fafc',
+            '--muted-text-color': '#94a3b8',
+            '--header-text': '#f8fafc',
+            '--header-bg': 'rgba(15, 23, 42, 0.95)',
+            '--header-border': 'rgba(71, 85, 105, 0.6)'
         };
 
         function applyTheme(theme) {
@@ -301,14 +314,23 @@
             const chartLayoutUpdate = {
                 'plot_bgcolor': 'transparent',
                 'paper_bgcolor': 'transparent',
-                'font.color': isDark ? '#ecf0f1' : '#3d405b',
-                'xaxis.gridcolor': isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
-                'yaxis.gridcolor': isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
-                'xaxis.linecolor': isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)',
-                'yaxis.linecolor': isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)',
-                'hoverlabel.bgcolor': isDark ? '#2c3e50' : '#ffffff',
-                'hoverlabel.font.color': isDark ? '#ecf0f1' : '#3d405b',
-                'hoverlabel.bordercolor': isDark ? '#3e4c5a' : '#e9ecef'
+                'font.color': isDark ? '#e2e8f0' : '#0f172a',
+                'font.family': 'Inter, -apple-system, BlinkMacSystemFont, sans-serif',
+                'font.size': 12,
+                'xaxis.gridcolor': isDark ? 'rgba(71, 85, 105, 0.3)' : 'rgba(203, 213, 225, 0.4)',
+                'yaxis.gridcolor': isDark ? 'rgba(71, 85, 105, 0.3)' : 'rgba(203, 213, 225, 0.4)',
+                'xaxis.linecolor': isDark ? 'rgba(71, 85, 105, 0.5)' : 'rgba(148, 163, 184, 0.5)',
+                'yaxis.linecolor': isDark ? 'rgba(71, 85, 105, 0.5)' : 'rgba(148, 163, 184, 0.5)',
+                'xaxis.tickfont.color': isDark ? '#cbd5e1' : '#475569',
+                'yaxis.tickfont.color': isDark ? '#cbd5e1' : '#475569',
+                'hoverlabel.bgcolor': isDark ? 'rgba(30, 41, 59, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+                'hoverlabel.font.color': isDark ? '#e2e8f0' : '#0f172a',
+                'hoverlabel.font.family': 'Inter, sans-serif',
+                'hoverlabel.bordercolor': isDark ? 'rgba(71, 85, 105, 0.6)' : 'rgba(203, 213, 225, 0.6)',
+                'legend.font.color': isDark ? '#e2e8f0' : '#0f172a',
+                'title.font.color': isDark ? '#f8fafc' : '#020617',
+                'title.font.family': 'Inter, sans-serif',
+                'title.font.weight': 700
             };
             if (priceChart && Object.keys(priceChart).length > 0) {
                 Plotly.relayout('priceChart', chartLayoutUpdate);

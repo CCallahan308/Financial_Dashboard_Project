@@ -1,141 +1,927 @@
-/* Ultra-Modern 'Glassmorphism' Dashboard CSS */
+/* Professional Financial Dashboard CSS - Inspired by Citadel/Jane Street */
 
-/* 1. FONT IMPORT */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+/* 1. FONT IMPORTS - Professional Typography */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
-/* 2. CSS VARIABLES & THEMES */
+/* 2. CSS VARIABLES & PROFESSIONAL THEMES */
 :root {
-    /* Shared */
-    --border-radius: 16px;
-    --transition-speed: 0.4s;
+    /* Shared Design System */
+    --border-radius-sm: 8px;
+    --border-radius-md: 12px;
+    --border-radius-lg: 16px;
+    --transition-speed: 0.25s;
+    --transition-curve: cubic-bezier(0.4, 0, 0.2, 1);
+    --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-mono: 'JetBrains Mono', 'Monaco', 'Courier New', monospace;
+    
+    /* Spacing Scale (8px base) */
+    --space-xs: 0.5rem;  /* 8px */
+    --space-sm: 0.75rem; /* 12px */
+    --space-md: 1rem;    /* 16px */
+    --space-lg: 1.5rem;  /* 24px */
+    --space-xl: 2rem;    /* 32px */
+    --space-2xl: 3rem;   /* 48px */
 
-    /* Light Theme */
-    --bg-gradient: linear-gradient(120deg, #f5f7fa 0%, #c3cfe2 100%);
-    --glass-bg: rgba(255, 255, 255, 0.6);
-    --glass-border: rgba(255, 255, 255, 0.9);
-    --text-color: #2c3e50;
-    --heading-color: #1e293b;
-    --muted-text-color: #34495e;
-    --shadow-color: rgba(61, 64, 91, 0.1);
-    --primary-color: #5e7ce2;
-    --success-color: #10ac84;
-    --danger-color: #d63031;
-    --header-text: #1e293b;
+    /* Light Theme - Professional Financial App Colors */
+    --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    --glass-bg: rgba(255, 255, 255, 0.85);
+    --glass-bg-hover: rgba(255, 255, 255, 0.95);
+    --glass-border: rgba(203, 213, 225, 0.6);
+    --glass-border-hover: rgba(148, 163, 184, 0.8);
+    --text-color: #0f172a;
+    --text-secondary: #475569;
+    --text-tertiary: #64748b;
+    --heading-color: #020617;
+    --muted-text-color: #64748b;
+    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    --shadow-color: rgba(15, 23, 42, 0.08);
+    
+    /* Professional Color Palette */
+    --primary-color: #3b82f6;
+    --primary-hover: #2563eb;
+    --primary-light: #dbeafe;
+    --success-color: #10b981;
+    --success-hover: #059669;
+    --success-light: #d1fae5;
+    --danger-color: #ef4444;
+    --danger-hover: #dc2626;
+    --danger-light: #fee2e2;
+    --warning-color: #f59e0b;
+    --warning-hover: #d97706;
+    --warning-light: #fef3c7;
+    --info-color: #06b6d4;
+    --info-light: #cffafe;
+    --neutral-color: #6b7280;
+    
+    --header-bg: rgba(255, 255, 255, 0.95);
+    --header-text: #020617;
+    --header-border: rgba(203, 213, 225, 0.8);
 }
 
 [data-theme="dark"] {
-    /* Dark Theme */
-    --bg-gradient: linear-gradient(120deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
-    --glass-bg: rgba(44, 62, 80, 0.6);
-    --glass-border: rgba(255, 255, 255, 0.1);
-    --text-color: #bdc3c7;
-    --heading-color: #ecf0f1;
-    --muted-text-color: #95a5a6;
-    --shadow-color: rgba(0, 0, 0, 0.2);
-    --primary-color: #6b89e6;
-    --header-text: #ecf0f1;
+    /* Dark Theme - Professional Trading Platform Style */
+    --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    --glass-bg: rgba(30, 41, 59, 0.85);
+    --glass-bg-hover: rgba(30, 41, 59, 0.95);
+    --glass-border: rgba(71, 85, 105, 0.4);
+    --glass-border-hover: rgba(100, 116, 139, 0.6);
+    --text-color: #e2e8f0;
+    --text-secondary: #cbd5e1;
+    --text-tertiary: #94a3b8;
+    --heading-color: #f8fafc;
+    --muted-text-color: #94a3b8;
+    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 1px 2px -1px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -4px rgba(0, 0, 0, 0.3);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+    --shadow-color: rgba(0, 0, 0, 0.4);
+    
+    /* Professional Dark Theme Colors */
+    --primary-color: #60a5fa;
+    --primary-hover: #3b82f6;
+    --primary-light: rgba(96, 165, 250, 0.15);
+    --success-color: #34d399;
+    --success-hover: #10b981;
+    --success-light: rgba(52, 211, 153, 0.15);
+    --danger-color: #f87171;
+    --danger-hover: #ef4444;
+    --danger-light: rgba(248, 113, 113, 0.15);
+    --warning-color: #fbbf24;
+    --warning-hover: #f59e0b;
+    --warning-light: rgba(251, 191, 36, 0.15);
+    --info-color: #22d3ee;
+    --info-light: rgba(34, 211, 238, 0.15);
+    --neutral-color: #9ca3af;
+    
+    --header-bg: rgba(15, 23, 42, 0.95);
+    --header-text: #f8fafc;
+    --header-border: rgba(71, 85, 105, 0.6);
 }
 
 /* 3. GENERAL STYLES */
-body {
-    background-image: var(--bg-gradient);
-    background-attachment: fixed;
-    font-family: 'Poppins', sans-serif;
-    color: var(--text-color);
-    transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-/* 4. HEADER */
+body {
+    background: var(--bg-gradient);
+    background-attachment: fixed;
+    font-family: var(--font-primary);
+    color: var(--text-color);
+    line-height: 1.6;
+    font-size: 14px;
+    letter-spacing: -0.01em;
+    transition: background var(--transition-speed) var(--transition-curve), 
+                color var(--transition-speed) var(--transition-curve);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--heading-color);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    line-height: 1.2;
+}
+
+h1 { font-size: 2rem; }
+h2 { font-size: 1.5rem; }
+h3 { font-size: 1.25rem; }
+h4 { font-size: 1.125rem; }
+h5 { font-size: 1rem; }
+h6 { font-size: 0.875rem; }
+
+p {
+    margin-bottom: var(--space-md);
+}
+
+/* Links */
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: color var(--transition-speed) var(--transition-curve);
+}
+
+a:hover {
+    color: var(--primary-hover);
+}
+
+/* 4. HEADER - Professional Trading Platform Style */
 .dashboard-header {
-    background: var(--glass-bg);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px); /* For Safari */
-    border-bottom: 1px solid var(--glass-border);
+    background: var(--header-bg);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-bottom: 1px solid var(--header-border);
     color: var(--header-text);
-    padding: 1rem 1.5rem;
+    padding: var(--space-md) var(--space-xl);
     position: sticky;
     top: 0;
-    z-index: 1020;
+    z-index: 1030;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 5px 20px var(--shadow-color);
+    box-shadow: var(--shadow-md);
+    transition: all var(--transition-speed) var(--transition-curve);
 }
 
 .dashboard-header h1 {
-    font-weight: 700;
+    font-weight: 800;
     font-size: 1.5rem;
     color: var(--heading-color);
+    letter-spacing: -0.03em;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
 }
 
-/* Theme Switcher */
+.dashboard-header h1 i {
+    font-size: 1.25rem;
+    color: var(--primary-color);
+}
+
+/* Theme Switcher - Enhanced Professional Style */
 #theme-switcher {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    color: var(--heading-color);
+    gap: var(--space-sm);
+    color: var(--text-secondary);
+    font-size: 0.875rem;
 }
-.theme-switch { position: relative; display: inline-block; width: 50px; height: 26px; }
-.theme-switch input { opacity: 0; width: 0; height: 0; }
-.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(128, 128, 128, 0.4); transition: .4s; border-radius: 34px; }
-.slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
-input:checked + .slider { background-color: var(--primary-color); }
-input:checked + .slider:before { transform: translateX(24px); }
 
-/* 5. CARDS - The Glassmorphism Core */
+#theme-switcher i {
+    color: var(--text-tertiary);
+    transition: color var(--transition-speed) var(--transition-curve);
+}
+
+.theme-switch { 
+    position: relative; 
+    display: inline-block; 
+    width: 52px; 
+    height: 28px; 
+}
+
+.theme-switch input { 
+    opacity: 0; 
+    width: 0; 
+    height: 0; 
+}
+
+.slider { 
+    position: absolute; 
+    cursor: pointer; 
+    top: 0; 
+    left: 0; 
+    right: 0; 
+    bottom: 0; 
+    background-color: var(--neutral-color); 
+    transition: var(--transition-speed) var(--transition-curve); 
+    border-radius: 34px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.slider:before { 
+    position: absolute; 
+    content: ""; 
+    height: 22px; 
+    width: 22px; 
+    left: 3px; 
+    bottom: 3px; 
+    background-color: white; 
+    transition: var(--transition-speed) var(--transition-curve); 
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+input:checked + .slider { 
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-hover)); 
+}
+
+input:focus + .slider {
+    box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+input:checked + .slider:before { 
+    transform: translateX(24px); 
+}
+
+/* Refresh Button - Professional Style */
+.refresh-btn {
+    padding: var(--space-sm) var(--space-lg);
+    font-size: 0.875rem;
+    font-weight: 600;
+    border: none;
+    border-radius: var(--border-radius-md);
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-hover));
+    color: white;
+    cursor: pointer;
+    transition: all var(--transition-speed) var(--transition-curve);
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+.refresh-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    background: linear-gradient(135deg, var(--primary-hover), var(--primary-color));
+}
+
+.refresh-btn:active {
+    transform: translateY(0);
+    box-shadow: var(--shadow-sm);
+}
+
+.refresh-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.refresh-btn i {
+    transition: transform var(--transition-speed) var(--transition-curve);
+}
+
+.refresh-btn:hover i {
+    transform: rotate(180deg);
+}
+
+/* Last Updated Text */
+.dashboard-header .ms-3 {
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+    font-weight: 500;
+}
+
+#lastUpdated {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+/* 5. CARDS - Professional Glassmorphism with Enhanced Depth */
 .metric-card, .chart-card, .data-card {
     background: var(--glass-bg);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
     border: 1px solid var(--glass-border);
-    border-radius: var(--border-radius);
-    box-shadow: 0 8px 32px 0 var(--shadow-color);
-    transition: all var(--transition-speed) ease;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-md);
+    transition: all var(--transition-speed) var(--transition-curve);
     overflow: hidden;
+    position: relative;
 }
 
 .metric-card:hover, .chart-card:hover, .data-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 16px 40px 0 var(--shadow-color);
-    border-color: var(--primary-color);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-xl);
+    border-color: var(--glass-border-hover);
+    background: var(--glass-bg-hover);
 }
 
-/* Metric Cards */
-.metric-card { padding: 1.5rem; display: flex; align-items: center; gap: 1.25rem; }
-.metric-icon { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.25rem; }
-.metric-content h6 { color: var(--muted-text-color); font-size: 0.8rem; font-weight: 500; text-transform: uppercase; }
-.metric-content h3 { color: var(--heading-color); font-size: 2rem; font-weight: 700; }
+/* Subtle gradient overlay for depth */
+.metric-card::before, .chart-card::before, .data-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, transparent 100%);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity var(--transition-speed) var(--transition-curve);
+}
 
-/* Chart & Data Cards */
+.metric-card:hover::before, .chart-card:hover::before, .data-card:hover::before {
+    opacity: 1;
+}
+
+/* Metric Cards - Enhanced Professional Style */
+.metric-card { 
+    padding: var(--space-lg); 
+    display: flex; 
+    align-items: center; 
+    gap: var(--space-lg);
+    min-height: 120px;
+}
+
+.metric-icon { 
+    width: 56px; 
+    height: 56px; 
+    border-radius: var(--border-radius-md); 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    color: white; 
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    box-shadow: var(--shadow-md);
+    transition: transform var(--transition-speed) var(--transition-curve);
+}
+
+.metric-card:hover .metric-icon {
+    transform: scale(1.1) rotate(-5deg);
+}
+
+.metric-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.metric-content h6 { 
+    color: var(--text-tertiary); 
+    font-size: 0.75rem; 
+    font-weight: 600; 
+    text-transform: uppercase; 
+    letter-spacing: 0.05em;
+    margin-bottom: var(--space-xs);
+}
+
+.metric-content h3 { 
+    color: var(--heading-color); 
+    font-size: 2.25rem; 
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: var(--space-xs);
+    font-family: var(--font-mono);
+}
+
+.metric-content small {
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--border-radius-sm);
+}
+
+.metric-content small.text-success {
+    background: var(--success-light);
+    color: var(--success-color);
+}
+
+.metric-content small.text-danger {
+    background: var(--danger-light);
+    color: var(--danger-color);
+}
+
+/* Chart & Data Cards - Enhanced Layout */
 .chart-header, .data-header {
-    padding: 1rem 1.5rem;
+    padding: var(--space-lg);
     border-bottom: 1px solid var(--glass-border);
-    background: transparent; /* Remove inner header background */
+    background: transparent;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
-.chart-title, .data-title { color: var(--heading-color); font-size: 1.1rem; font-weight: 600; }
-.chart-container { padding: 1rem; height: 350px; }
 
-/* News & Economic Data */
-.news-container, .economic-container { padding: 0.5rem; overflow-y: auto; max-height: 450px; }
-.news-item, .economic-item { padding: 1rem; border-bottom: 1px solid var(--glass-border); }
-.news-item:last-child, .economic-item:last-child { border-bottom: none; }
-.news-title a { color: var(--heading-color); text-decoration: none; font-weight: 600; }
-.news-title a:hover { color: var(--primary-color); }
-.news-source { background: var(--primary-color); color: white; padding: 0.25rem 0.5rem; border-radius: 6px; font-size: 0.7rem; font-weight: 500; }
+.chart-title, .data-title { 
+    color: var(--heading-color); 
+    font-size: 1rem; 
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
 
-/* 6. UTILITIES & PLOTLY */
-.bg-primary { background-color: var(--primary-color) !important; }
-.bg-success { background-color: var(--success-color) !important; }
-.bg-danger { background-color: var(--danger-color) !important; }
+.chart-title i, .data-title i {
+    color: var(--primary-color);
+    font-size: 1.125rem;
+}
 
-/* Plotly Dark Theme Integration */
+.chart-controls {
+    display: flex;
+    gap: var(--space-sm);
+}
+
+.chart-controls .btn {
+    padding: var(--space-xs) var(--space-md);
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: var(--border-radius-sm);
+    transition: all var(--transition-speed) var(--transition-curve);
+}
+
+.chart-controls .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+
+.chart-container { 
+    padding: var(--space-lg); 
+    height: 400px;
+}
+
+/* News & Economic Data - Professional List Style */
+.news-container, .economic-container { 
+    padding: var(--space-sm); 
+    overflow-y: auto; 
+    max-height: 500px;
+}
+
+/* Custom Scrollbar - Professional Style */
+.news-container::-webkit-scrollbar,
+.economic-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.news-container::-webkit-scrollbar-track,
+.economic-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.news-container::-webkit-scrollbar-thumb,
+.economic-container::-webkit-scrollbar-thumb {
+    background: var(--glass-border);
+    border-radius: 3px;
+}
+
+.news-container::-webkit-scrollbar-thumb:hover,
+.economic-container::-webkit-scrollbar-thumb:hover {
+    background: var(--glass-border-hover);
+}
+
+.news-item, .economic-item { 
+    padding: var(--space-lg); 
+    border-bottom: 1px solid var(--glass-border);
+    transition: all var(--transition-speed) var(--transition-curve);
+}
+
+.news-item:last-child, .economic-item:last-child { 
+    border-bottom: none; 
+}
+
+.news-item:hover, .economic-item:hover {
+    background: var(--primary-light);
+    border-radius: var(--border-radius-md);
+    padding-left: var(--space-xl);
+}
+
+.news-header, .economic-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-sm);
+}
+
+.news-title {
+    margin-bottom: var(--space-sm);
+}
+
+.news-title a { 
+    color: var(--heading-color); 
+    text-decoration: none; 
+    font-weight: 600;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    display: block;
+    transition: color var(--transition-speed) var(--transition-curve);
+}
+
+.news-title a:hover { 
+    color: var(--primary-color); 
+}
+
+.news-source { 
+    background: var(--primary-color); 
+    color: white; 
+    padding: 0.25rem 0.625rem; 
+    border-radius: var(--border-radius-sm); 
+    font-size: 0.625rem; 
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.news-date, .economic-date {
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+    font-weight: 500;
+    font-family: var(--font-mono);
+}
+
+.news-description {
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: var(--space-sm);
+}
+
+.news-symbol {
+    display: flex;
+    gap: var(--space-xs);
+}
+
+.news-symbol .badge {
+    padding: 0.25rem 0.625rem;
+    font-size: 0.625rem;
+    font-weight: 700;
+    border-radius: var(--border-radius-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.economic-name {
+    font-weight: 700;
+    font-size: 0.875rem;
+    color: var(--heading-color);
+}
+
+.economic-values {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-top: var(--space-sm);
+}
+
+.economic-value {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--heading-color);
+    font-family: var(--font-mono);
+}
+
+.economic-change {
+    font-size: 0.875rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.25rem 0.625rem;
+    border-radius: var(--border-radius-sm);
+}
+
+.economic-change.text-success {
+    background: var(--success-light);
+    color: var(--success-color);
+}
+
+.economic-change.text-danger {
+    background: var(--danger-light);
+    color: var(--danger-color);
+}
+
+/* No Data State */
+.no-data {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-2xl);
+    text-align: center;
+}
+
+.no-data i {
+    color: var(--text-tertiary);
+    opacity: 0.5;
+}
+
+.no-data p {
+    color: var(--text-tertiary);
+    font-size: 0.875rem;
+    margin: 0;
+}
+
+/* 6. UTILITIES & BOOTSTRAP OVERRIDES */
+.bg-primary { 
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-hover)) !important; 
+}
+.bg-success { 
+    background: linear-gradient(135deg, var(--success-color), var(--success-hover)) !important; 
+}
+.bg-danger { 
+    background: linear-gradient(135deg, var(--danger-color), var(--danger-hover)) !important; 
+}
+.bg-warning { 
+    background: linear-gradient(135deg, var(--warning-color), var(--warning-hover)) !important; 
+}
+.bg-info { 
+    background: linear-gradient(135deg, var(--info-color), #0891b2) !important; 
+}
+.bg-secondary { 
+    background: linear-gradient(135deg, var(--neutral-color), #4b5563) !important; 
+}
+
+.text-success {
+    color: var(--success-color) !important;
+}
+
+.text-danger {
+    color: var(--danger-color) !important;
+}
+
+.text-warning {
+    color: var(--warning-color) !important;
+}
+
+.text-muted {
+    color: var(--text-tertiary) !important;
+}
+
+/* Badge Styles */
+.badge {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border-radius: var(--border-radius-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+/* Button Overrides */
+.btn {
+    font-family: var(--font-primary);
+    font-weight: 600;
+    border-radius: var(--border-radius-md);
+    transition: all var(--transition-speed) var(--transition-curve);
+    border: none;
+}
+
+.btn-outline-secondary {
+    border: 1px solid var(--glass-border);
+    color: var(--text-secondary);
+    background: transparent;
+}
+
+.btn-outline-secondary:hover {
+    background: var(--glass-bg-hover);
+    color: var(--heading-color);
+    border-color: var(--glass-border-hover);
+}
+
+/* Container Spacing */
+.dashboard-content {
+    padding-top: var(--space-md);
+}
+
+.container-fluid {
+    max-width: 1600px;
+}
+
+/* Sections */
+.metrics-section {
+    animation: fadeInUp 0.6s var(--transition-curve);
+}
+
+.charts-section {
+    animation: fadeInUp 0.8s var(--transition-curve);
+}
+
+.data-section {
+    animation: fadeInUp 1s var(--transition-curve);
+}
+
+/* 7. LOADING & FEEDBACK STATES */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    transition: opacity var(--transition-speed) var(--transition-curve);
+}
+
+.loading-spinner {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    padding: var(--space-2xl);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-xl);
+    text-align: center;
+}
+
+.loading-spinner .spinner-border {
+    width: 3rem;
+    height: 3rem;
+    border-width: 0.3rem;
+}
+
+.loading-spinner p {
+    color: var(--text-color);
+    font-weight: 600;
+    margin-top: var(--space-md);
+    margin-bottom: 0;
+}
+
+/* Toast Notifications */
+.toast {
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-xl);
+}
+
+.toast-header {
+    border-bottom: 1px solid var(--glass-border);
+    font-weight: 600;
+}
+
+/* 8. ANIMATIONS */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* 9. RESPONSIVE DESIGN */
+@media (max-width: 1200px) {
+    .container-fluid {
+        padding-left: var(--space-md);
+        padding-right: var(--space-md);
+    }
+    
+    .metric-card h3 {
+        font-size: 1.75rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-header {
+        flex-direction: column;
+        gap: var(--space-md);
+        padding: var(--space-md);
+    }
+    
+    .dashboard-header h1 {
+        font-size: 1.25rem;
+    }
+    
+    .metric-card {
+        padding: var(--space-md);
+    }
+    
+    .metric-icon {
+        width: 48px;
+        height: 48px;
+        font-size: 1.25rem;
+    }
+    
+    .metric-content h3 {
+        font-size: 1.5rem;
+    }
+    
+    .chart-container {
+        height: 300px;
+        padding: var(--space-sm);
+    }
+}
+
+@media (max-width: 576px) {
+    body {
+        font-size: 13px;
+    }
+    
+    .metric-card {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .news-item, .economic-item {
+        padding: var(--space-md);
+    }
+}
+
+/* 10. CUSTOM SCROLLBAR FOR ENTIRE PAGE */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--glass-border);
+    border-radius: 5px;
+    transition: background var(--transition-speed) var(--transition-curve);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--glass-border-hover);
+}
+
+/* 11. PLOTLY CHART ENHANCEMENTS */
+.chart-container .js-plotly-plot {
+    border-radius: var(--border-radius-md);
+}
+
+/* Ensure charts are responsive */
+.chart-container .plotly {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* Dark theme chart container */
 [data-theme="dark"] .chart-container {
-    /* This is a placeholder. Plotly charts need JS updates for full dark theme. */
-    border-radius: var(--border-radius);
+    border-radius: var(--border-radius-md);
 }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: var(--muted-text-color); }
+/* 12. FOCUS STATES FOR ACCESSIBILITY */
+button:focus,
+a:focus,
+input:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+/* 13. PRINT STYLES */
+@media print {
+    .dashboard-header,
+    .refresh-btn,
+    #theme-switcher {
+        display: none;
+    }
+    
+    body {
+        background: white;
+    }
+    
+    .metric-card, .chart-card, .data-card {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+}
