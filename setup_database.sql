@@ -144,6 +144,7 @@ CREATE INDEX IF NOT EXISTS idx_fact_prices_date ON analytics.fact_prices(date_ke
 CREATE INDEX IF NOT EXISTS idx_fact_prices_security ON analytics.fact_prices(security_key);
 CREATE INDEX IF NOT EXISTS idx_fact_news_date ON analytics.fact_news(date_key);
 CREATE INDEX IF NOT EXISTS idx_fact_news_security ON analytics.fact_news(security_key);
+CREATE INDEX IF NOT EXISTS idx_fact_news_url ON analytics.fact_news(url);
 CREATE INDEX IF NOT EXISTS idx_fact_economics_date ON analytics.fact_economics(date_key);
 CREATE INDEX IF NOT EXISTS idx_fact_economics_indicator ON analytics.fact_economics(indicator_key);
 

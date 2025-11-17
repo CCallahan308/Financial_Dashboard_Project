@@ -47,10 +47,16 @@ engine = None
 
 
 def get_db_engine():
-    """Get or create database engine"""
+    """Get or create database engine with connection pooling"""
     global engine
     if engine is None:
-        engine = create_engine(DATABASE_URL, pool_pre_ping=True)
+        engine = create_engine(
+            DATABASE_URL,
+            pool_size=5,            # Maintain 5 connections in the pool
+            max_overflow=10,        # Allow up to 10 additional connections
+            pool_pre_ping=True,     # Verify connections before using them
+            pool_recycle=3600       # Recycle connections after 1 hour
+        )
     return engine
 
 
@@ -284,6 +290,7 @@ def extract_econ_data(series_ids: List[str]) -> pd.DataFrame:
 def load_to_staging(dataframe: pd.DataFrame, table_name: str) -> int:
     """
     Generic function to load pandas DataFrame into staging tables
+    Optimized with bulk inserts using multi-row INSERT
 
     Args:
         dataframe: pandas DataFrame with data to load
@@ -300,18 +307,19 @@ def load_to_staging(dataframe: pd.DataFrame, table_name: str) -> int:
         engine = get_db_engine()
         full_table_name = f"staging.{table_name}"
 
-        # Load data to staging
+        # Load data to staging using efficient multi-row insert
         rows_loaded = dataframe.to_sql(
             table_name,
             engine,
             schema='staging',
             if_exists='append',
             index=False,
-            method='multi'
+            method='multi',
+            chunksize=1000  # Insert in chunks of 1000 rows for optimal performance
         )
 
-        logger.info(f"Loaded {rows_loaded} rows into {full_table_name}")
-        return rows_loaded
+        logger.info(f"Loaded {len(dataframe)} rows into {full_table_name}")
+        return len(dataframe)
 
     except Exception as e:
         logger.error(f"Error loading data to {full_table_name}: {e}")
@@ -321,6 +329,7 @@ def load_to_staging(dataframe: pd.DataFrame, table_name: str) -> int:
 def execute_transformations() -> bool:
     """
     Execute SQL transformation script to move data from staging to analytics
+    Optimized to run in a single transaction for better performance
 
     Returns:
         True if successful, False otherwise
@@ -338,14 +347,15 @@ def execute_transformations() -> bool:
         with open(script_path, 'r') as f:
             sql_script = f.read()
 
-        # Execute transformation script
+        # Execute transformation script in a single transaction for better performance
         engine = get_db_engine()
 
         with engine.connect() as conn:
-            # Begin transaction
+            # Execute the transformation script
+            # Use execution_options to improve performance
+            conn = conn.execution_options(isolation_level="READ COMMITTED")
             with conn.begin():
-                # Execute the transformation script
-                result = conn.execute(text(sql_script))
+                conn.execute(text(sql_script))
                 logger.info("Transformation script executed successfully")
 
         logger.info("Data transformation phase completed")

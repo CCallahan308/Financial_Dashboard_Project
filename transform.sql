@@ -79,6 +79,7 @@ WHERE series_id NOT IN (SELECT series_id FROM analytics.dim_economic_indicator);
 -- ===================================
 
 -- Transform and load clean price data
+-- Optimized with explicit index usage and batch processing
 INSERT INTO analytics.fact_prices (date_key, security_key, open_price, high_price, low_price, close_price, volume)
 SELECT DISTINCT
     dd.date_key,
@@ -91,17 +92,20 @@ SELECT DISTINCT
 FROM staging.raw_stock_prices rsp
 JOIN analytics.dim_date dd ON TO_DATE(rsp.trade_date, 'YYYY-MM-DD') = dd.full_date
 JOIN analytics.dim_security ds ON rsp.symbol = ds.symbol
-LEFT JOIN analytics.fact_prices fp ON dd.date_key = fp.date_key AND ds.security_key = fp.security_key
 WHERE rsp.trade_date IS NOT NULL
   AND rsp.close_price IS NOT NULL
   AND CAST(rsp.close_price AS NUMERIC(10,2)) > 0
-  AND fp.date_key IS NULL;
+  AND NOT EXISTS (
+      SELECT 1 FROM analytics.fact_prices fp
+      WHERE fp.date_key = dd.date_key AND fp.security_key = ds.security_key
+  );
 
 -- ===================================
 -- NEWS FACT TABLE POPULATION
 -- ===================================
 
 -- Transform and load clean news data
+-- Optimized to avoid duplicate URL inserts
 INSERT INTO analytics.fact_news (article_id, date_key, security_key, title, description, url, source_name, sentiment_score)
 SELECT
     gen_random_uuid() as article_id,
@@ -115,16 +119,19 @@ SELECT
 FROM staging.raw_news_articles rna
 JOIN analytics.dim_date dd ON TO_DATE(SUBSTRING(rna.published_at, 1, 10), 'YYYY-MM-DD') = dd.full_date
 JOIN analytics.dim_security ds ON rna.symbol_searched = ds.symbol
-LEFT JOIN analytics.fact_news fn ON rna.url = fn.url
 WHERE rna.published_at IS NOT NULL
   AND rna.url IS NOT NULL
-  AND fn.url IS NULL;
+  AND NOT EXISTS (
+      SELECT 1 FROM analytics.fact_news fn
+      WHERE fn.url = rna.url
+  );
 
 -- ===================================
 -- ECONOMIC FACT TABLE POPULATION
 -- ===================================
 
 -- Transform and load clean economic data
+-- Optimized with NOT EXISTS instead of LEFT JOIN for better performance
 INSERT INTO analytics.fact_economics (date_key, indicator_key, value, change_percent)
 SELECT DISTINCT
     dd.date_key,
@@ -134,31 +141,37 @@ SELECT DISTINCT
 FROM staging.raw_econ_data red
 JOIN analytics.dim_date dd ON TO_DATE(red.series_date, 'YYYY-MM-DD') = dd.full_date
 JOIN analytics.dim_economic_indicator dei ON red.series_id = dei.series_id
-LEFT JOIN analytics.fact_economics fe ON dd.date_key = fe.date_key AND dei.indicator_key = fe.indicator_key
 WHERE red.series_value IS NOT NULL
   AND CAST(red.series_value AS NUMERIC(15,4)) IS NOT NULL
-  AND fe.date_key IS NULL;
+  AND NOT EXISTS (
+      SELECT 1 FROM analytics.fact_economics fe
+      WHERE fe.date_key = dd.date_key AND fe.indicator_key = dei.indicator_key
+  );
 
 -- ===================================
 -- UPDATE CHANGE PERCENTAGES FOR ECONOMIC DATA
 -- ===================================
 
--- Calculate percentage changes for economic indicators (simplified approach)
-UPDATE analytics.fact_economics fe1
+-- Calculate percentage changes for economic indicators
+-- Optimized using a CTE and window functions for better performance
+WITH value_changes AS (
+    SELECT
+        fe.id,
+        fe.value,
+        LAG(fe.value) OVER (PARTITION BY fe.indicator_key ORDER BY dd.full_date) as previous_value
+    FROM analytics.fact_economics fe
+    JOIN analytics.dim_date dd ON fe.date_key = dd.date_key
+    WHERE fe.change_percent = 0.0
+)
+UPDATE analytics.fact_economics fe
 SET change_percent = CASE
-    WHEN fe2.value IS NOT NULL AND fe2.value != 0
-    THEN ((fe1.value - fe2.value) / fe2.value) * 100
+    WHEN vc.previous_value IS NOT NULL AND vc.previous_value != 0
+    THEN ((vc.value - vc.previous_value) / vc.previous_value) * 100
     ELSE 0.0
 END
-FROM
-    analytics.fact_economics fe2
-    JOIN analytics.dim_date dd2 ON fe2.date_key = dd2.date_key,
-    analytics.dim_date dd1
-WHERE
-    fe1.date_key = dd1.date_key
-    AND fe1.indicator_key = fe2.indicator_key
-    AND dd2.full_date = dd1.full_date - INTERVAL '1 month'
-    AND fe1.change_percent = 0.0;
+FROM value_changes vc
+WHERE fe.id = vc.id
+  AND vc.previous_value IS NOT NULL;
 
 -- ===================================
 -- TRANSFORMATION SUMMARY

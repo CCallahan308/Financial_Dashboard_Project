@@ -7,6 +7,7 @@ Web interface displaying financial analytics data from the star schema
 import os
 import json
 from datetime import datetime, timedelta
+from functools import lru_cache
 from flask import Flask, render_template, request, jsonify
 from sqlalchemy import create_engine, text
 import plotly.graph_objects as go
@@ -24,12 +25,21 @@ DATABASE_URL = os.getenv('DATABASE_URL')
 if not DATABASE_URL:
     raise ValueError("DATABASE_URL environment variable is required")
 
-engine = create_engine(DATABASE_URL, pool_pre_ping=True)
+# Configure connection pooling for better performance
+engine = create_engine(
+    DATABASE_URL,
+    pool_size=10,           # Maintain 10 connections in the pool
+    max_overflow=20,        # Allow up to 20 additional connections
+    pool_pre_ping=True,     # Verify connections before using them
+    pool_recycle=3600       # Recycle connections after 1 hour
+)
 
 
+@lru_cache(maxsize=1)
 def get_analytics_data():
     """
     Fetch stock price data for dashboard visualization
+    Cached to avoid repeated database queries
 
     Returns:
         DataFrame-like result with stock price data
@@ -55,9 +65,11 @@ def get_analytics_data():
     return data
 
 
+@lru_cache(maxsize=1)
 def get_news_data():
     """
     Fetch recent news articles for dashboard
+    Cached to avoid repeated database queries
 
     Returns:
         List of recent news articles
@@ -85,9 +97,11 @@ def get_news_data():
     return data
 
 
+@lru_cache(maxsize=1)
 def get_economic_data():
     """
     Fetch economic indicators data for dashboard
+    Cached to avoid repeated database queries
 
     Returns:
         Economic indicators data
@@ -112,9 +126,11 @@ def get_economic_data():
     return data
 
 
+@lru_cache(maxsize=1)
 def get_summary_metrics():
     """
     Calculate key metrics for dashboard summary cards
+    Cached and optimized with simplified query
 
     Returns:
         Dictionary with key metrics
@@ -123,9 +139,10 @@ def get_summary_metrics():
     WITH latest_prices AS (
         SELECT DISTINCT ON (ds.symbol)
             ds.symbol,
-            ds.company_name,
+            ds.security_key,
             fp.close_price,
-            dd.full_date
+            dd.full_date,
+            dd.date_key
         FROM analytics.fact_prices fp
         JOIN analytics.dim_date dd ON fp.date_key = dd.date_key
         JOIN analytics.dim_security ds ON fp.security_key = ds.security_key
@@ -138,9 +155,7 @@ def get_summary_metrics():
             fp.close_price as previous_price,
             ((lp.close_price - fp.close_price) / fp.close_price) * 100 as price_change
         FROM latest_prices lp
-        JOIN analytics.fact_prices fp ON lp.symbol = (
-            SELECT ds.symbol FROM analytics.dim_security ds WHERE ds.security_key = fp.security_key
-        )
+        JOIN analytics.fact_prices fp ON lp.security_key = fp.security_key
         JOIN analytics.dim_date dd ON fp.date_key = dd.date_key
         WHERE dd.full_date = lp.full_date - INTERVAL '1 day'
     )
@@ -297,8 +312,15 @@ def dashboard():
 def refresh_data():
     """
     API endpoint to refresh dashboard data
+    Clears cache and fetches fresh data
     """
     try:
+        # Clear the cache to get fresh data
+        get_analytics_data.cache_clear()
+        get_news_data.cache_clear()
+        get_economic_data.cache_clear()
+        get_summary_metrics.cache_clear()
+        
         # Fetch fresh data
         stock_data = get_analytics_data()
         news_data = get_news_data()
