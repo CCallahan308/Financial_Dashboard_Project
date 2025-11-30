@@ -46,7 +46,7 @@ Follow these steps to get your local environment set up.
 ### 1\. Clone the Repository
 
 ```bash
-git clone https://github.com/CCallahan308/Dashboard_Project/
+git clone [https://github.com/CCallahan308/Financial_Dashboard_Project]
 cd Dashboard_Project
 ```
 
